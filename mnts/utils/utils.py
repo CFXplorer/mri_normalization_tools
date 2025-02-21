@@ -6,6 +6,7 @@ from shutil import *
 from pprint import pformat, pprint
 from ..mnts_logger import MNTSLogger
 from typing import *
+from mnts.utils.sequence_check import filter_modality as unify_modality_name
 
 __all__ = ['repeat_zip']
 
@@ -127,7 +128,7 @@ def organize_directory(d: Union[Path, str], warn_duplicate: bool = False):
     # iterate and put files where they belong
     for name, row in df.iterrows():
         src_dir = row['file_dir']
-        mov_to = target_dir / row['Unified Modality']
+        mov_to = d / row['Unified Modality']
         if not mov_to.is_dir():
             mov_to.mkdir(exist_ok=True, parents=True)
 
