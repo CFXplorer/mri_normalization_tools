@@ -372,7 +372,7 @@ class NyulNormalizer(MNTSIntensityBase, MNTSFilterRequireTraining):
         super(NyulNormalizer, self).load_state(location)
 
         f = np.load(location, allow_pickle=True)
-        tModel = f['trainedModel'].all()
+        tModel = f['trainedModel'][0]
 
         self._lower_origin = tModel['lower_origin']
         self._upper_origin = tModel['upper_origin']
