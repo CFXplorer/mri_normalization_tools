@@ -14,6 +14,7 @@ from mnts.utils.preprocessing import recursive_list_dir
 from typing import Optional, Union, List, Tuple, Iterable, Dict
 from ..mnts_logger import MNTSLogger
 from tqdm.auto import tqdm
+from mnts.utils.sequence_check import filter_modality as unify_modality_name
 
 # These are optional packages installed by `pip install -e .[dicom]`
 try:
@@ -259,9 +260,12 @@ class Dcm2NiiConverter:
         """
         f, self.id_from_path = self.pre_processing_paths()
 
+        compare_length = min(11, len(self.id_from_path))
+
         # Check ID list and drop if input is not in idlist (not None). This is based on result of idglobber
         if not self.idlist is None:
-            if not self.id_from_path in self.idlist:
+            #if not self.id_from_path in self.idlist:
+            if not any(self.id_from_path[:compare_length] == item[:compare_length] for item in self.idlist):
                 self.logger.info(f"Skipping {self.id_from_path} because target not in idlist.")
                 return
 
@@ -276,6 +280,9 @@ class Dcm2NiiConverter:
             outimage, dcm_files = self.read_images(f, ss)
             constructed_outname, dcm_tags = self.construct_ouputpath(dcm_files)
 
+            sequence_name = dcm_tags['0008|103e']
+            sequence_tag = unify_mri_sequence_name(sequence_name)
+            
             # Skip if dicom tag (0008|103e) contains substring in seq_filters
             seq_filters = self.seq_filters
             if not seq_filters is None:
